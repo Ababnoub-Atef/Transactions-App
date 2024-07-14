@@ -19,13 +19,9 @@ export default function DataContextProvider({ children }) {
 
   //! ==========> get table data <==========
   async function tableData() {
-    const customersResponse = await fetch("http://localhost:8000/customers");
-    const transactionsResponse = await fetch(
-      "http://localhost:8000/transactions"
-    );
+    const dataResponse = await fetch("src/data/db.json");
 
-    const customers = await customersResponse.json();
-    const transactions = await transactionsResponse.json();
+    const { customers, transactions } = await dataResponse.json();
 
     const mergedData = transactions.map((transaction) => {
       const customer = customers.find((c) => c.id === transaction.customer_id);
