@@ -19,7 +19,7 @@ export default function DataContextProvider({ children }) {
 
   //! ==========> get table data <==========
   async function tableData() {
-    const dataResponse = await fetch("./db.json");
+    const dataResponse = await fetch("docs/db.json");
 
     const { customers, transactions } = await dataResponse.json();
 
