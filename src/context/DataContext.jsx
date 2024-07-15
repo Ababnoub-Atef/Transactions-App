@@ -19,23 +19,32 @@ export default function DataContextProvider({ children }) {
 
   //! ==========> get table data <==========
   async function tableData() {
-    const dataResponse = await fetch("db.json");
+    try {
+      const dataResponse = await fetch("./db.json");
 
-    const { customers, transactions } = await dataResponse.json();
+      if (!dataResponse.ok) {
+        throw new Error("Failed to fetch data");
+      }
 
-    const mergedData = transactions.map((transaction) => {
-      const customer = customers.find((c) => c.id === transaction.customer_id);
-      return {
-        ...transaction,
-        customer: customer ? customer.name : "Unknown",
-        // amount: `${transaction.amount} $`,
-        date: formatDate(transaction.date),
-      };
-    });
+      const { customers, transactions } = await dataResponse.json();
 
-    setData(mergedData);
+      const mergedData = transactions.map((transaction) => {
+        const customer = customers.find(
+          (c) => c.id === transaction.customer_id
+        );
+        return {
+          ...transaction,
+          customer: customer ? customer.name : "Unknown",
+          // amount: `${transaction.amount} $`,
+          date: formatDate(transaction.date),
+        };
+      });
 
-    return mergedData;
+      setData(mergedData);
+      return mergedData;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   //! ==========> calc total transactions amount of all days <==========

@@ -1,4 +1,4 @@
-import { useEffect, useContext, useMemo, useState } from "react";
+import { useEffect, useContext, useMemo, useState, useCallback } from "react";
 
 import {
   Table,
@@ -9,8 +9,10 @@ import {
   TableCell,
   getKeyValue,
   Spinner,
+  Input,
 } from "@nextui-org/react";
 import { DataContext } from "../../context/DataContext";
+import { SearchIcon } from "./SearchIcon";
 
 const columns = [
   {
@@ -34,6 +36,7 @@ const columns = [
 export default function DisplayTable() {
   // const [selectedKeys, setSelectedKeys] = useState(new Set(["1"]));
   const [isLoading, setIsLoading] = useState(true);
+  const [searchQuery, setSearchQuery] = useState("");
 
   //! ==========> data context <==========
   const {
@@ -66,16 +69,47 @@ export default function DisplayTable() {
       direction: "ascending",
     }
   );
+  
+  //! ==========> filter data <==========
+  const filteredItems = useMemo(() => {
+    return data.filter((item) =>
+      columns.some((column) =>
+        item[column.key]
+          .toString()
+          .toLowerCase()
+          .includes(searchQuery.toLowerCase())
+      )
+    );
+  }, [searchQuery, data]);
 
   const sortedItems = useMemo(() => {
-    return [...data].sort((a, b) => {
+    return [...filteredItems].sort((a, b) => {
       const first = a[sortDescriptor.column];
       const second = b[sortDescriptor.column];
       const cmp = first < second ? -1 : first > second ? 1 : 0;
 
       return sortDescriptor.direction === "descending" ? -cmp : cmp;
     });
-  }, [sortDescriptor, data]);
+  }, [sortDescriptor, filteredItems]);
+
+  const onClear = useCallback(() => {
+    setSearchQuery("");
+  }, []);
+
+  // !========> search bar <==========
+  const topContent = useMemo(() => {
+    return (
+      <Input
+        clearable
+        className="w-full"
+        placeholder="Search by name..."
+        startContent={<SearchIcon />}
+        value={searchQuery}
+        onClear={() => onClear()}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+    );
+  }, [searchQuery]);
 
   return (
     <section className="container mx-auto">
@@ -85,13 +119,14 @@ export default function DisplayTable() {
           base: "max-h-[50vh] overflow-y-auto",
         }}
         isHeaderSticky
-        aria-label="Controlled table example with dynamic content"
+        aria-label="Controlled table with dynamic content"
         selectionMode="single"
         color="secondary"
         // selectedKeys={selectedKeys}
         // onSelectionChange={setSelectedKeys}
         sortDescriptor={sortDescriptor}
         onSortChange={setSortDescriptor}
+        topContent={topContent}
       >
         {/* ==========> table header <========== */}
         <TableHeader columns={columns}>
@@ -109,9 +144,9 @@ export default function DisplayTable() {
         {/* ==========> table body <========== */}
         <TableBody
           items={sortedItems}
-          emptyContent={"No rows to display."}
+          emptyContent={"No Transactions to display"}
           isLoading={isLoading}
-          loadingContent={<Spinner label="Loading..." />}
+          loadingContent={<Spinner color="secondary" label="Loading..." />}
         >
           {(item) => (
             <TableRow key={item.id}>
