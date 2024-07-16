@@ -6,6 +6,7 @@ export default function DataContextProvider({ children }) {
   const [data, setData] = useState([]);
   const [totalAmountOfDay, setTotalAmountOfDay] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [transactionsAmountOfUser, setTransactionsAmountOfUser] = useState(0);
   const [totalTransactionsAmountOfUser, setTotalTransactionsAmountOfUser] =
     useState(0);
   const [user, setUser] = useState("");
@@ -49,7 +50,7 @@ export default function DataContextProvider({ children }) {
 
   //! ==========> calc total transactions amount of all days <==========
   function calcTotalAmount(data) {
-    let totalAmount = data.reduce((acc, data) => {
+    const totalAmount = data.reduce((acc, data) => {
       return acc + data.amount;
     }, 0);
     setTotalAmount(totalAmount);
@@ -59,7 +60,7 @@ export default function DataContextProvider({ children }) {
   function calcTotalAmountOfDay(item) {
     const day = data.filter((t) => t.date === item.date);
 
-    let totalAmountOfDay = day.reduce((acc, item) => {
+    const totalAmountOfDay = day.reduce((acc, item) => {
       return acc + item.amount;
     }, 0);
 
@@ -68,15 +69,23 @@ export default function DataContextProvider({ children }) {
 
   //! ==========> get details of selected transaction <==========
   function getDataOfUser(item) {
-    const user = data.filter(
+    // !==========> calc total transactions amount of selected user <==========
+    const user = data.filter((t) => t.customer === item.customer);
+    const totalUserAmount = user.reduce((acc, data) => {
+      return acc + data.amount;
+    }, 0);
+    setTotalTransactionsAmountOfUser(totalUserAmount);
+
+    // !==========> calc transactions amount of selected user <==========
+    const selectedUser = data.filter(
       (t) => t.customer === item.customer && t.date === item.date
     );
 
-    let totalTransactionsAmountOfUser = user.reduce((acc, item) => {
+    const transactionsAmountOfUser = selectedUser.reduce((acc, item) => {
       return acc + item.amount;
     }, 0);
 
-    setTotalTransactionsAmountOfUser(totalTransactionsAmountOfUser);
+    setTransactionsAmountOfUser(transactionsAmountOfUser);
     setUser(item.customer);
     setDate(item.date.slice(0, 5));
   }
@@ -91,6 +100,7 @@ export default function DataContextProvider({ children }) {
         totalAmount,
         calcTotalAmount,
         getDataOfUser,
+        transactionsAmountOfUser,
         totalTransactionsAmountOfUser,
         user,
         date,

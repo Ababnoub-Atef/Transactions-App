@@ -69,7 +69,7 @@ export default function DisplayTable() {
       direction: "ascending",
     }
   );
-  
+
   //! ==========> filter data <==========
   const filteredItems = useMemo(() => {
     return data.filter((item) =>

@@ -10,6 +10,7 @@ export default function Chart() {
   const {
     totalAmountOfDay,
     totalAmount,
+    transactionsAmountOfUser,
     totalTransactionsAmountOfUser,
     user,
     date,
@@ -22,7 +23,7 @@ export default function Chart() {
       {
         // label: "Amount",
         data: [
-          !totalTransactionsAmountOfUser ? 0 : totalTransactionsAmountOfUser,
+          !transactionsAmountOfUser ? 0 : transactionsAmountOfUser,
           !totalAmountOfDay ? totalAmount : totalAmountOfDay,
         ],
         backgroundColor: ["#38bdf8", "#8b5cf6"],
@@ -70,9 +71,46 @@ export default function Chart() {
   };
 
   return (
-    <section className="container mx-auto mb-2 pt-6">
-      <div className="bg-zinc-700 bg-opacity-50 p-6 rounded-2xl">
-        <Doughnut data={data} options={options} />
+    <section className="container mx-auto mb-2 pt-2">
+      <div className="bg-zinc-700 bg-opacity-50 p-4 rounded-2xl">
+        <div>
+          <Doughnut data={data} options={options} />
+        </div>
+        <div className="mt-3 flex flex-row gap-4 items-center text-sm justify-center *:bg-zinc-700 *:px-3 *:py-1 *:rounded-lg">
+          {/* Total transactions amount */}
+          <p className="text-center text-white hover:bg-violet-500 *:hover:text-white hover:scale-105 hover:cursor-pointer transition">
+            Total Transactions Amount:{" "}
+            <span className="text-violet-500 font-bold">{totalAmount}$</span>
+          </p>
+
+          {user && (
+            <>
+              {/* Total transactions amount on date */}
+              {/* <p className="text-center text-white hover:bg-violet-500 *:hover:text-white hover:scale-105 hover:cursor-pointer transition">
+                Total Transactions Amount on {date}:{" "}
+                <span className="text-violet-500 font-bold">
+                  {totalAmountOfDay}$
+                </span>
+              </p> */}
+
+              {/* Transactions amount of user */}
+              {/* <p className="text-center text-white hover:bg-violet-500 *:hover:text-white hover:scale-105 hover:cursor-pointer transition">
+                Transactions Amount of {user}:{" "}
+                <span className="text-violet-500 font-bold">
+                  {transactionsAmountOfUser}$
+                </span>
+              </p>  */}
+
+              {/* Total transactions amount of user */}
+              <p className="text-center text-white hover:bg-violet-500 *:hover:text-white hover:scale-105 hover:cursor-pointer transition">
+                Total Transactions Amount of {user}:{" "}
+                <span className="text-violet-500 font-bold">
+                  {totalTransactionsAmountOfUser}$
+                </span>
+              </p>
+            </>
+          )}
+        </div>
       </div>
     </section>
   );
